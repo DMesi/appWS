@@ -1,0 +1,165 @@
+﻿@using appWS.Models;
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+</head>
+<body>
+
+    <div class="col-md-10 col-md-offset-1">
+
+        <div class="well container body-content">
+            <!--Table to capture username and password-->
+            <table class="table table-bordered">
+                <thead>
+                    <tr class="success">
+                        <th colspan="4">
+                            Prijavljivanje postojećih korisnika:
+
+                            <a href="registracija.html" class="btn btn-success pull-right">
+                                Registracija
+                            </a>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            Korisničko ime:
+                            <input type="text" id="txtUsername" placeholder="Username" />
+                        </td>
+
+                        <td>
+                            Lozinka:
+                            <input type="password" id="txtPassword"
+                                   placeholder="Password" />
+
+                            <input id="btnLogin" class="btn btn-success" type="button"
+                                   value="Login" />
+                        </td>
+                        <td colspan="2" width="500px">&nbsp;</td>
+                    </tr>
+                </tbody>
+            </table>
+            <!--Bootstrap alert to display error message if the login fails-->
+            <div id="divError" class="alert alert-danger collapse">
+                <a id="linkClose" href="#" class="close">&times;</a>
+                <div id="divErrorText"></div>
+            </div>
+        </div>
+
+        @*<div class="well container body-content">
+                <input id="btnLoadEmployees" class="btn btn-success"
+                       type="button" value="Load Employees" />
+
+
+                <span id="spanUsername" class="text-muted"></span>
+
+
+
+                <input id="btnLogoff" class="btn btn-success pull-right"
+                       type="button" value="Log Off" />
+
+
+
+            </div>*@
+
+
+
+
+        <div class="container body-content ">
+
+            <table>
+
+                <tr>
+                    <td>
+                        <div style="width:200px;" class="well">
+                            <fieldset>
+
+                                <legend>Kategorije:</legend>
+
+                                @Html.Raw(ViewBag.kat)
+
+                            </fieldset>
+                        </div>
+                    </td>
+                    <td rowspan="2" style="padding-left:20px">@RenderBody()</td>
+                </tr>
+
+                <tr>
+                    <td>
+
+
+                        <div style="width:200px;" class="well">
+                            <fieldset>
+
+                                <legend>Korpa:</legend>
+
+                            </fieldset>
+                        </div>
+
+
+                    </td>
+
+
+                </tr>
+            </table>
+
+
+
+            <hr />
+            <footer>
+                <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+            </footer>
+        </div>
+
+    </div>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
+
+
+<script type="text/javascript">
+        $(document).ready(function () {
+
+            $('#linkClose').click(function () {
+                $('#divError').hide('fade');
+            });
+
+            $('#btnLogin').click(function () {
+                $.ajax({
+                    // Post username, password & the grant type to /token
+                    url: 'https://localhost:44315/token',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: {
+                        username: $('#txtUsername').val(),
+                        password: $('#txtPassword').val(),
+                        grant_type: 'password'
+                    },
+                    // When the request completes successfully, save the
+                    // access token in the browser session storage and
+                    // redirect the user to Data.html page. We do not have
+                    // this page yet. So please add it to the
+                    // EmployeeService project before running it
+                    success: function (response) {
+                        sessionStorage.setItem("accessToken", response.access_token);
+                        window.location.href = "data.html";
+                    },
+                    // Display errors if any in the Bootstrap alert <div>
+                    error: function (jqXHR) {
+                        $('#divErrorText').text(jqXHR.responseText);
+                        $('#divError').show('fade');
+                    }
+                });
+            });
+        });
+</script>

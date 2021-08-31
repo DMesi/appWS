@@ -1,0 +1,455 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+
+</head>
+<body style="padding-top:20px">
+    <div class="col-md-10 col-md-offset-1">
+        @*<div class="well">
+                <input id="btnLoadEmployees" class="btn btn-success"
+                       type="button" value="Load Employees" />
+
+
+                <span id="spanUsername" class="text-muted"></span>
+
+
+
+                <input id="btnLogoff" class="btn btn-success pull-right"
+                       type="button" value="Log Off" />
+
+
+
+            </div>*@
+
+        <div id="adminDiv">
+
+            <table>
+                <tr>
+                    <td>Kategorija:</td>
+                    <td>
+                        <input type="hidden" id="slika_putanja" />
+                        <input type="hidden" id="id_proizvoda" />
+                        @Html.DropDownList("kategorijaV", new SelectList(ViewBag.ddlKategorija, "Value", "Text"), "------------")
+                    </td>
+                </tr>
+                <tr>
+                    <td>Naziv:</td>
+                    <td>@Html.TextBox("naziv")</td>
+                </tr>
+                <tr>
+                    <td>Opis:</td>
+                    <td>@Html.TextArea("opis", new { cols = 35, @rows = 3 })</td>
+                </tr>
+                <tr>
+                    <td>Cena:</td>
+                    <td>@Html.TextBox("cena")</td>
+                </tr>
+                <tr>
+                    <td>Lager:</td>
+                    <td>@Html.TextBox("lager")</td>
+                </tr>
+                <tr>
+                    <td>Slika:</td>
+                    <td> <input type="file" name="slika" id="slika" /></td>
+                </tr>
+
+                <tr>
+                    <td colspan="2">   <input type="button" id="btnSnimi" value="Snimi" style="font-weight:bolder" /><input type="button" id="btnIzmeni" value="Izmeni" /><input type="button" id="btnBrisi" value="Brisi" /></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><progress id="fileProgress" style="display: none"></progress></td>
+                </tr>
+            </table>
+            <hr />
+            <span id="lblMessage" style="color: Green"></span>
+
+
+        </div>
+
+
+
+        @*<div id="kategorijaPrikazi">
+            <input type="radio" id="odabir" name="odabir" value="0" checked>
+            <label for="kategorija">Sve</label><br>
+
+            <input type="radio" id="odabir" name="odabir" value="1">
+            <label for="kategorija">Monitor</label><br>
+
+            <input type="radio" id="odabir" name="odabir" value="2">
+            <label for="kategorija">Kuciste</label><br>
+
+
+        </div>*@
+
+        <div id="prikaziProizvode">
+            <table class="table table-bordered" style="width:700px" id="tblData1">
+
+                <tbody id="tblBody"></tbody>
+            </table>
+
+        </div>
+
+
+
+
+
+
+
+        @*<div id="divData" class="well hidden">
+                <table class="table table-bordered" id="tblData">
+                    <thead>
+                        <tr class="success">
+                            <td>ID</td>
+                            <td>AD</td>
+                            <td>IME</td>
+                            <td>PREZIME</td>
+                            <td>MATICNI</td>
+                        </tr>
+                    </thead>
+                    <tbody id="tblBody"></tbody>
+                </table>
+            </div>*@
+        <div class="modal fade" tabindex="-1" id="errorModal"
+             data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">
+                            &times;
+                        </button>
+                        <h4 class="modal-title">Session Expired</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <h2 class="modal-title">Close this message to login again</h2>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger"
+                                data-dismiss="modal">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="divError" class="alert alert-danger collapse">
+            <a id="linkClose" href="#" class="close">&times;</a>
+            <div id="divErrorText"></div>
+        </div>
+    </div>
+
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+
+
+
+    <script type="text/javascript">
+
+
+
+
+        $(document).ready(function () {
+            $(function () {
+                $("input:radio:first").click();
+            });
+            prikaziProizvode();
+
+            //  $('#spanUsername').text('Hello ' + sessionStorage.getItem('userName'));
+
+            //   alert(sessionStorage.getItem('userName'));
+
+
+            //if (sessionStorage.getItem('accessToken') == null) { //ovo uzimamo iz login stranice SESIJA
+            //    window.location.href = "login.html";
+            //}
+
+            //$('#btnLogoff').click(function () {
+            //    sessionStorage.removeItem('accessToken');
+            //    window.location.href = "login.html";
+            //});
+
+            //$('#linkClose').click(function () {
+            //    $('#divError').hide('fade');
+            //});
+
+            //$('#errorModal').on('hidden.bs.modal', function () {
+            //    window.location.href = "login.html";
+            //});
+
+            $("#btnSnimi").on("click", function (evt) {
+                evt.preventDefault();
+
+                var formData = new FormData();
+
+                formData.append('ID_kat', $("#kategorijaV").val());
+                formData.append('naziv', $("#naziv").val());
+                formData.append('opis', $("#opis").val());
+                formData.append('cena', $("#cena").val());
+                formData.append('lager', $("#lager").val());
+                formData.append("fileName", $("#naziv").val());
+
+                formData.append("file", $("#slika")[0].files[0]);
+
+                $.ajax({
+                    url: 'https://localhost:44315/api/server/',
+                    type: 'POST',
+                    //headers: {
+                    //    'Authorization': 'Bearer '
+                    //        + sessionStorage.getItem("accessToken")
+                    //},
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function (fileName) {
+                        $("#fileProgress").hide();
+                        $("#lblMessage").html("Dodali ste novi proizvod!");
+
+                        setTimeout(function () {
+                            window.location.reload(1);
+                        }, 5000);
+
+                    },
+                    xhr: function () {
+                        var fileXhr = $.ajaxSettings.xhr();
+                        if (fileXhr.upload) {
+                            $("progress").show();
+                            fileXhr.upload.addEventListener("progress", function (e) {
+                                if (e.lengthComputable) {
+                                    $("#fileProgress").attr({
+                                        value: e.loaded,
+                                        max: e.total
+                                    });
+                                }
+                            }, false);
+                        }
+                        return fileXhr;
+                    }
+                });
+
+            });
+
+            function prikaziProizvode() {
+
+
+
+
+                $('input[name=odabir]').click(function () {
+
+                    $("#btnIzmeni").hide();
+                    $("#btnSnimi").show();
+                    $("#btnBrisi").hide();
+
+                    $("#naziv").val("");
+                    $("#opis").val("");
+                    $("#cena").val("");
+                    $("#lager").val("");
+
+
+
+                    document.getElementById("tblBody").innerHTML = "";
+                    var zaPretragu = $("input[name='odabir']:checked").val();
+
+                    if ($(this).val() === "0") {
+
+                        var uri = "https://localhost:44315/api/server/UzmiSveIzBaze";
+
+                        $.ajax({
+
+                            type: 'GET',
+                            url: uri,
+                            dataType: "json",
+                            success: function (result) {
+
+                                if (result.length > 0) {
+
+                                    $(result).each(function (i, val) {
+
+                                        //   $("#tblBody").append("<tr><td rowspan='2'><a href='#' onclick='uzmiPodatke(" + val.Id + "," + val.Id_kat + ",\"" + val.Naziv + "\"," + val.Cena + ",\"" + val.Opis + "\"," + val.Lager + ");return false;'> <img src='https://localhost:44315/Slike/" + val.Slika + "'width='350px'/></a></td><td>" + val.Naziv +
+                                        $("#tblBody").append("<tr><td rowspan='2'><a href='javascript:uzmiPodatke(" + val.Id + "," + val.Id_kat + ",\"" + val.Naziv + "\"," + val.Cena + ",\"" + val.Opis + "\"," + val.Lager + ",\"" + val.Slika + "\")'> <img src='https://localhost:44315/Slike/" + val.Slika + "'width='350px'/></a></td><td>" + val.Naziv +
+
+                                            "</td><tr><td><pre>" + val.Opis + "</pre></td></tr>");
+                                    });
+
+                                }
+
+                            },
+                            error: function (request, message, error) {
+                                handleException(request, message, error);
+                            }
+
+                        });
+                    } else {
+
+                        var uri = "https://localhost:44315/api/server/UzmiSveIzBazeId/" + zaPretragu + "";
+
+                        //      alert(uri);
+                        $.ajax({
+
+                            type: 'GET',
+                            url: uri,
+                            dataType: "json",
+                            success: function (result) {
+
+
+                                if (result.length > 0) {
+
+
+
+                                    $(result).each(function (i, val) {
+
+                                        $("#tblBody").append("<tr><td rowspan='2'><a href='javascript:uzmiPodatke(" + val.Id + "," + val.Id_kat + ",\"" + val.Naziv + "\"," + val.Cena + ",\"" + val.Opis + "\"," + val.Lager + ",\"" + val.Slika + "\")'> <img src='https://localhost:44315/Slike/" + val.Slika + "' width='350px'/></a></td><td>" + val.Naziv +
+                                            "</td><tr><td><pre>" + val.Opis + "</pre></td></tr>");
+                                    });
+
+                                }
+
+                            },
+                            error: function (request, message, error) {
+                                handleException(request, message, error);
+                            }
+
+                        });
+
+
+
+
+
+                    }
+
+                });
+            }
+
+
+
+
+        });
+
+
+        function uzmiPodatke(id_proizvoda, id_kat, naziv, cena, opis, lager, slika) {
+
+            $("#btnSnimi").hide();
+            $("#btnIzmeni").show();
+            $("#btnBrisi").show();
+            //alert(naziv);
+
+            $("#id_proizvoda").val(id_proizvoda);
+            // // $("#kategorijaV").val();
+            $("#naziv").val(naziv);
+            $("#opis").val(opis);
+            $("#cena").val(cena);
+            $("#lager").val(lager);
+            $("#slika_putanja").val(slika);
+            $("#kategorijaV").val(id_kat).change();
+            //  alert(slika);
+
+        }
+
+        $("#btnIzmeni").on("click", function (evt) {
+            evt.preventDefault();
+
+            //var proizvodObjekt = {
+            //    Id: "",
+            //    Id_kat: "",
+            //    Naziv: "",
+            //    Opis: "",
+            //    Cena: "",
+            //    Lager: "",
+            //    Slika: ""
+            //}
+
+            //proizvodObjekt = new Object();
+
+            //proizvodObjekt.Id = $("#id_proizvoda").val();
+            //proizvodObjekt.Id_kat = $("#kategorijaV").val();
+            //proizvodObjekt.Naziv = $("#naziv").val();
+            //proizvodObjekt.Opis = $("#opis").val();
+            //proizvodObjekt.Cena = $("#cena").val();
+            //proizvodObjekt.Lager = $("#lager").val();
+            //proizvodObjekt.Slika = $("#ID_Celine").val();
+
+            var formData = new FormData();
+            formData.append('ID', $("#id_proizvoda").val());
+            formData.append('ID_kat', $("#kategorijaV").val());
+            formData.append('naziv', $("#naziv").val());
+            formData.append('opis', $("#opis").val());
+            formData.append('cena', $("#cena").val());
+            formData.append('lager', $("#lager").val());
+            formData.append('slikaP', $("#slika_putanja").val());
+            formData.append("fileName", $("#naziv").val());
+            formData.append("file", $("#slika")[0].files[0]);
+
+            $.ajax({
+                url: 'https://localhost:44315/api/server/',
+                type: 'PUT',
+                //headers: {
+                //    'Authorization': 'Bearer '
+                //        + sessionStorage.getItem("accessToken")
+                //},
+                data: formData,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (fileName) {
+                    $("#fileProgress").hide();
+                    $("#lblMessage").html("Uspesna izmena!");
+
+                    setTimeout(function () {
+                        window.location.reload(1);
+                    }, 5000);
+
+                },
+                xhr: function () {
+                    var fileXhr = $.ajaxSettings.xhr();
+                    if (fileXhr.upload) {
+                        $("progress").show();
+                        fileXhr.upload.addEventListener("progress", function (e) {
+                            if (e.lengthComputable) {
+                                $("#fileProgress").attr({
+                                    value: e.loaded,
+                                    max: e.total
+                                });
+                            }
+                        }, false);
+                    }
+                    return fileXhr;
+                }
+            });
+
+
+        });
+
+        $("#btnBrisi").on("click", function (evt) {
+            evt.preventDefault();
+
+            var id = $("#id_proizvoda").val();
+
+            $.ajax({
+
+                type: 'DELETE',
+                url: 'https://localhost:44315/api/server/' + id,
+
+                success: function (result) {
+                    $("#lblMessage").html("Obrisano!");
+                    setTimeout(function () {
+                        window.location.reload(1);
+                    }, 5000);
+
+                },
+                error: function (request, message, error) {
+                    handleException(request, message, error);
+                }
+
+            });
+
+
+
+        });
+    </script>
+</body>
+</html>

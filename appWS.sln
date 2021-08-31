@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31410.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "apiWS", "apiWS\apiWS.csproj", "{9FE7046C-02F8-4CB0-89A9-E5B8B87EBAE0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "appWS", "appWS\appWS.csproj", "{D696E3EA-A594-46B5-976C-4A0633A17180}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9FE7046C-02F8-4CB0-89A9-E5B8B87EBAE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FE7046C-02F8-4CB0-89A9-E5B8B87EBAE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FE7046C-02F8-4CB0-89A9-E5B8B87EBAE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FE7046C-02F8-4CB0-89A9-E5B8B87EBAE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D696E3EA-A594-46B5-976C-4A0633A17180}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D696E3EA-A594-46B5-976C-4A0633A17180}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D696E3EA-A594-46B5-976C-4A0633A17180}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D696E3EA-A594-46B5-976C-4A0633A17180}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FC09864E-734E-423A-9456-A7BF9430AA6A}
+	EndGlobalSection
+EndGlobal
